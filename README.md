@@ -35,10 +35,10 @@ The system uses **3 distinct agents** orchestrated by a central `InterviewSessio
 ### Agent 1 — Interviewer (`agents/interviewer.py`)
 Conducts the interview. Asks one question per turn, adapts based on the evaluator's signal (probe deeper vs. move on), calibrates difficulty, and closes the session warmly. Uses the full conversation history as context so each question feels like a natural continuation.
 
-### Agent 2 — Evaluator (`agents/evaluator.py`)
+### Agent 2 — Evaluator/Shadow (`agents/evaluator.py`)
 Silent scorer. After each candidate answer, it evaluates the response across 5 dimensions (clarity, depth, relevance, structure, confidence) and returns a structured JSON with strengths, gaps, a quality classification, and a follow-up signal. The candidate never sees this output — it feeds directly into the Interviewer's next question.
 
-### Agent 3 — Coach (`agents/coach.py`)
+### Agent 3 — Coach/Mentor (`agents/coach.py`)
 Activated only at the end. Synthesizes all per-turn evaluations into a final feedback report: overall rating, top 3 strengths, top 3 gaps, and 3 specific actionable items to practice.
 
 ### Orchestration (`orchestrator/session.py`)
@@ -60,13 +60,13 @@ Coach → generates final report
 
 ## Key Design Decisions
 
-**Why separate Evaluator from Interviewer?**  
+**Why separate Evaluator/Shadow from Interviewer?**  
 Mixing scoring logic into the Interviewer prompt creates conflicting objectives. A dedicated Evaluator can be calibrated independently and produces clean, structured output that the Interviewer can act on without over-thinking.
 
-**Evaluator signal injection**  
+**Evaluator/Shadow signal injection**  
 Rather than giving the Interviewer raw scores, we inject a compact signal: `answer_quality`, `probe_deeper`, and `suggested_follow_up`. This gives the Interviewer just enough context to adapt without anchoring it to a number.
 
-**JSON for Evaluator + Coach**  
+**JSON for Evaluator/Shadow + Coach/Mentor**  
 Both agents that produce structured data return strict JSON. This makes the outputs machine-readable and prevents the agents from adding unnecessary prose that would bloat the context.
 
 **Prompt files are decoupled from code**  
