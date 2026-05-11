@@ -1,4 +1,4 @@
-# AI Mock Interview Coach
+# AI INTERVIEW SIMULATOR
 
 A multi-agent AI system that conducts realistic mock interviews and delivers structured coaching feedback.
 
